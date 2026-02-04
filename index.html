@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMT Studios | Rebrand</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%; height: 100%;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Hintergrund Video */
+        #video-container {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        #bg-video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            filter: brightness(0.5);
+            transition: filter 1.5s ease;
+        }
+
+        /* Fake ReCAPTCHA Overlay */
+        #captcha-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        .captcha-box {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 3px;
+            display: flex; align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            user-select: none;
+        }
+
+        .captcha-checkbox {
+            width: 28px; height: 28px;
+            border: 2px solid #c1c1c1;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .captcha-box:hover .captcha-checkbox { border-color: #b2b2b2; }
+
+        .captcha-text { color: #555; font-size: 14px; font-weight: 400; }
+
+        .captcha-logo {
+            margin-left: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .captcha-logo img { width: 30px; }
+        .captcha-logo span { font-size: 8px; color: #555; margin-top: 2px; }
+
+        /* Content (Glass) */
+        .glass-container {
+            z-index: 10;
+            width: 90%; max-width: 550px;
+            padding: 60px 45px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(40px) saturate(200%);
+            -webkit-backdrop-filter: blur(40px) saturate(200%);
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            opacity: 0; /* Erst nach Click sichtbar */
+            transform: translateY(20px);
+            transition: all 1s ease 0.5s;
+        }
+
+        .glass-container.show { opacity: 1; transform: translateY(0); }
+
+        h1 { color: #fff; font-size: 2.8rem; margin-bottom: 20px; letter-spacing: -0.04em; }
+        p { color: rgba(255, 255, 255, 0.85); font-size: 1.15rem; line-height: 1.6; margin-bottom: 45px; }
+        .highlight { color: #fff; font-weight: 600; }
+
+        .btn-portal {
+            display: inline-block; background-color: #fff; color: #000;
+            text-decoration: none; padding: 18px 45px; border-radius: 35px;
+            font-weight: 600; transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        .btn-portal:hover { transform: scale(1.05); box-shadow: 0 0 30px rgba(255, 255, 255, 0.4); }
+
+        /* Checkmark Animation */
+        .checked::after {
+            content: '✓'; position: absolute; top: -5px; left: 3px;
+            font-size: 25px; color: #009b4e; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="captcha-overlay">
+    <div class="captcha-box" onclick="unlockSite()">
+        <div class="captcha-checkbox" id="check-box"></div>
+        <div class="captcha-text">Ich bin kein Roboter</div>
+        <div class="captcha-logo">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/RecaptchaLogo.svg" alt="reCAPTCHA">
+            <span>reCAPTCHA</span>
+        </div>
+    </div>
+</div>
+
+<div id="video-container">
+    <video muted playsinline id="bg-video">
+        <source src="https://files.cargocollective.com/c1213185/small2.mp4" type="video/mp4">
+    </video>
+</div>
+
+<div class="glass-container" id="main-content">
+    <h1>AMT Entertainment</h1>
+    <p>Etwas Großes wirft seine Schatten voraus. <br> Bereiten Sie sich auf<span class="highlight">spannende neue Projekte</span> und ein neues Design vor.</p>
+    <a href="http://amtstudios.ddns.net/AMS" class="btn-portal">ZUM AMS PORTAL</a>
+</div>
+
+<script>
+    const video = document.getElementById('bg-video');
+    const overlay = document.getElementById('captcha-overlay');
+    const content = document.getElementById('main-content');
+    const checkBox = document.getElementById('check-box');
+    let direction = 1;
+
+    function unlockSite() {
+        // 1. Visuelles Feedback
+        checkBox.classList.add('checked');
+
+        // 2. Kurz warten für Realismus, dann Video starten
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            overlay.style.visibility = 'hidden';
+            content.classList.add('show');
+            video.style.filter = "brightness(0.7)";
+
+            // Video abspielen
+            video.play();
+            playPingPong();
+        }, 600);
+    }
+
+    function playPingPong() {
+        if (direction === 1) {
+            if (video.currentTime >= video.duration - 0.1) {
+                direction = -1;
+                video.pause();
+            }
+        } else {
+            if (video.currentTime <= 0.1) {
+                direction = 1;
+                video.play();
+            } else {
+                video.currentTime -= 0.035;
+            }
+        }
+        requestAnimationFrame(playPingPong);
+    }
+</script>
+
+</body>
+</html>
